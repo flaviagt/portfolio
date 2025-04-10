@@ -1,6 +1,40 @@
+:root {
+  --color-accent: oklch(65% 50% 0);
+}
+
 body {
   font: 100%/1.5 system-ui;
-  max-width: 200px;     
-  margin: 0 auto;
-  /*padding: 0 10px;*/
+  max-width: 100ch;     
+  /*margin: 0 auto;*/
+  margin-inline: max(1em, (100% - 100ch) / 2);
+  padding: 0 10px;
+}
+
+nav{
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-bottom: auto ;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: oklch(80% 3% 200);
+}
+
+nav a.current {
+  border-bottom: 0.4em solid oklch(80% 3% 200);
+  padding-bottom: 0.2em; 
+}
+
+nav a:hover {
+  border-bottom: 0.4em solid var(--color-accent); 
+  padding-bottom: 0.2em;
+  background-color: oklch(from var(--color-accent) 95% 5% h);
+}
+
+nav a{
+  flex: 1;
+  text-decoration: none;
+  color: inherit;
+  text-align: center;
+  padding: 0.5em;
 }
