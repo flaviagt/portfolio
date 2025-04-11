@@ -10,6 +10,17 @@ body {
   padding: 0 10px;
 }
 
+h1 {
+  font-size: 4rem; /* 400% of 16px = 64px */
+  line-height: 1.1; /* Tighter leading for headings */
+  text-wrap: balance; /* Balances text lines */
+}
+
+h2, h3, h4, h5, h6 {
+  line-height: 1.1; /* Consistent tight leading */
+  text-wrap: balance; /* Balances text lines */
+}
+
 nav{
   display: flex;
   align-items: center;
@@ -56,4 +67,32 @@ label{
   grid-template-columns: subgrid;
   grid-column: 1 / -1;
   gap: 1em;
+}
+
+.projects{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+  grid-template-rows: repeat(3, auto); 
+  gap: 1em;
+}
+
+article {
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: span 3; 
+}
+
+article h2 {
+  margin: 0; 
+  grid-row: 1; 
+}
+
+article img {
+  width: 100%; 
+  height: auto; 
+  grid-row: 2; 
+}
+
+article p {
+  grid-row: 3; 
 }
