@@ -5,20 +5,19 @@
 body {
   font: 100%/1.5 system-ui;
   max-width: 100ch;     
-  /*margin: 0 auto;*/
   margin-inline: max(1em, (100% - 100ch) / 2);
   padding: 0 10px;
 }
 
 h1 {
-  font-size: 4rem; /* 400% of 16px = 64px */
-  line-height: 1.1; /* Tighter leading for headings */
-  text-wrap: balance; /* Balances text lines */
+  font-size: 4rem;
+  line-height: 1.1;
+  text-wrap: balance;
 }
 
 h2, h3, h4, h5, h6 {
-  line-height: 1.1; /* Consistent tight leading */
-  text-wrap: balance; /* Balances text lines */
+  line-height: 1.1; 
+  text-wrap: balance;
 }
 
 nav{
@@ -95,4 +94,79 @@ article img {
 
 article p {
   grid-row: 3; 
+}
+
+/*for resume page*/
+.resume-page {
+  font-family: Arial; 
+  color: #333; 
+  width: 700px; 
+  margin: 20px auto;
+}
+
+.resume-page * {
+  margin: 0;
+  padding: 0;
+}
+
+.resume-page h1 {
+  font-size: 36px; 
+  font-weight: bold; 
+}
+
+.resume-page header p {
+  font-size: 15px; 
+  color: #567; 
+  margin-top: 5px;
+}
+
+.resume-page section ul {
+  margin-bottom: 20px; 
+}
+
+.resume-page section ul li {
+  display: inline-block;
+}
+
+.resume-page section ul li a {
+  color: blue; 
+  text-decoration: none;
+}
+
+.resume-page section ul li a:hover {
+  text-decoration: underline; 
+}
+
+.resume-page h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 20px;
+
+  border-bottom: 1px solid #ccc;
+}
+
+.resume-page h3 {
+  font-size: 18px; 
+  font-weight: bold;
+}
+
+.resume-page p {
+  font-size: 16px; 
+  margin-bottom: 10px;
+  color: #444; 
+}
+
+.resume-page article ul {
+  list-style: disc; 
+  margin-left: 10px;
+}
+
+.resume-page article ul li {
+  font-size: 16px; 
+  
+}
+
+.resume-page section:last-child ul {
+  list-style: none; 
+  margin-left: 0; 
 }
