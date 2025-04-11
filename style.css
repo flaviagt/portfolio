@@ -39,7 +39,21 @@ nav a{
   padding: 0.5em;
 }
 
-input, textarea, button {
+form{
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1em;
+  /*
   font: inherit;
+  display: block; 
+  width: 100%;
+  box-sizing: border-box;
+  */
 }
 
+label{
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
+  gap: 1em;
+}
