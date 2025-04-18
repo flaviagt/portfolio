@@ -99,3 +99,26 @@ let pages = [
     nav.append(a);
   }
   
+  // Insert the Theme Switcher into the page
+document.body.insertAdjacentHTML(
+    'afterbegin',
+    `
+    <label class="color-scheme">
+      Theme:
+      <select id="theme-selector">
+        <option value="light dark">Automatic</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+    </label>
+    `
+  );
+
+  // Get reference to the select element
+let themeSelect = document.getElementById('theme-selector');
+
+// Handle changes
+themeSelect.addEventListener('change', () => {
+  document.documentElement.style.colorScheme = themeSelect.value;
+});
+  
