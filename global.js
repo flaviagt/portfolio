@@ -117,8 +117,15 @@ document.body.insertAdjacentHTML(
   // Get reference to the select element
 let themeSelect = document.getElementById('theme-selector');
 
-// Handle changes
-themeSelect.addEventListener('change', () => {
-  document.documentElement.style.colorScheme = themeSelect.value;
-});
+if ("colorScheme" in localStorage) {
+    let savedScheme = localStorage.colorScheme;
+    document.documentElement.style.setProperty('color-scheme', savedScheme);
+    themeSelect.value = savedScheme;
+  }
   
+  // When the user changes the dropdown, apply and save the new theme
+  themeSelect.addEventListener('input', function(event) {
+    let newScheme = event.target.value;
+    document.documentElement.style.setProperty('color-scheme', newScheme);
+    localStorage.colorScheme = newScheme;
+  });  
