@@ -76,7 +76,7 @@ let pages = [
   
   const BASE_PATH = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
     ? "/"                  // Local development
-    : "/website/";         // Your GitHub Pages repo name
+    : "/portfolio/";         // Your GitHub Pages repo name
   
   for (let p of pages) {
     let url = p.url;
