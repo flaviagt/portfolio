@@ -63,6 +63,37 @@ function $$(selector, context = document) {
 //     nav.append(a);
 //   }
 
+export async function fetchJSON(url) {
+  try {
+    const response = await fetch(url);
+    console.log(response); // For debugging
+    if (!response.ok) {
+      throw new Error(`Failed to fetch projects: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching or parsing JSON data:', error);
+  }
+}
+
+export function renderProjects(projects, containerElement, headingLevel = 'h2') {
+  containerElement.innerHTML = '';
+  if (projects.length === 0) {
+    containerElement.innerHTML = '<p>No projects available.</p>';
+    return;
+  }
+  projects.forEach(projectItem => {
+    const article = document.createElement('article');
+    article.innerHTML = `
+        <${headingLevel}>${projectItem.title}</${headingLevel}>
+        <img src="${projectItem.image}" alt="${projectItem.title}">
+        <p>${projectItem.description}</p>
+    `;
+    containerElement.appendChild(article);
+  });
+}
+
 let pages = [
     { url: '', title: 'Home' },
     { url: 'projects/', title: 'Projects' },
@@ -129,3 +160,4 @@ if ("colorScheme" in localStorage) {
     document.documentElement.style.setProperty('color-scheme', newScheme);
     localStorage.colorScheme = newScheme;
   });  
+
