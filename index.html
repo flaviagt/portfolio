@@ -19,6 +19,18 @@
     <h1>
         Flavia Gabriella
     </h1>
+    <style>
+        #profile-stats dl {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 10px;
+          padding: 1rem;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+        }
+        #profile-stats dt { grid-row: 1; font-weight: bold; }
+        #profile-stats dd { grid-row: 2; margin: 0; }
+    </style>
 
     <p>
         Short Description:<br>
@@ -29,6 +41,9 @@
 
     <img src="images/Cookie Monster.jpeg" alt="Picture of Cookie Monster coding on laptop">
 
+    <h2>GitHub Stats</h2>
+    <div id="profile-stats"></div>
+    
     <h2>Latest Projects</h2>
     <div class="projects">
         <!-- Dynamically added content will appear here -->
