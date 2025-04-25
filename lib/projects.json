@@ -2,7 +2,7 @@
     {
         "title": "Recipe Rating & User Analysis",
         "year":"2025",
-        "image": "https://vis-society.github.io/labs/2/images/empty.svg", //"../images/Recipe User Project.png",
+        "image": "https://vis-society.github.io/labs/2/images/empty.svg", 
         "description": "This project focuses on analyzing the relationship between ratings of recipes and other factors. Specifically, relationship between a cook's recipe count and their recipe rating."
     },
     {
