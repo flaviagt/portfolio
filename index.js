@@ -1,9 +1,13 @@
 import { fetchJSON, renderProjects, fetchGitHubData } from './global.js';
 
 async function initLatestProjects() {
-    const projects = await fetchJSON('lib/projects.json');
+    const projects = await fetchJSON('./lib/projects.json');
     const latestProjects = projects.slice(0, 3);
     const projectsContainer = document.querySelector('.projects');
+    if (!projectsContainer) {
+        onsole.error('No .projects container found on the homepage.');
+        return;
+    }
     renderProjects(latestProjects, projectsContainer, 'h2');
   
     const githubData = await fetchGitHubData('flaviagt');
