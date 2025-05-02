@@ -85,10 +85,15 @@ export function renderProjects(projects, containerElement, headingLevel = 'h2') 
   }
   projects.forEach(projectItem => {
     const article = document.createElement('article');
+    
     article.innerHTML = `
+      <img src="${projectItem.image}" alt="${projectItem.title}">
+      <div class="project-text">
         <${headingLevel}>${projectItem.title}</${headingLevel}>
-        <img src="${projectItem.image}" alt="${projectItem.title}">
         <p>${projectItem.description}</p>
+        <br>
+        <p>c. ${projectItem.year}</p>
+      </div>
     `;
     containerElement.appendChild(article);
   });
