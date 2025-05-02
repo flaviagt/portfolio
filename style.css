@@ -193,3 +193,9 @@ html {
 .color-scheme select {
   margin-left: 0.5rem;
 }
+
+#projects-pie-plot {
+  max-width: 20em;
+  margin-block: 2em;
+  overflow: visible;
+}
