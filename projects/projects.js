@@ -5,6 +5,7 @@ let query = '';
 let selectedIndex = -1;
 let initialData = []; // Store initial pie chart data
 let initialArcs = []; // Store initial arc paths
+let filteredProjects = []; // Store current filtered projects globally [NEW]
 
 async function initProjects() {
   const projects = await fetchJSON('../lib/projects.json');
@@ -17,18 +18,30 @@ async function initProjects() {
   }
   renderProjects(projects, projectsContainer, 'h2');
 
+  // Initialize filteredProjects with all projects
+  filteredProjects = projects; // [NEW]
+
   // Initial pie chart and legend render
   renderPieChart(projects);
 
   // Search functionality
   searchInput.addEventListener('input', (event) => {
     query = event.target.value;
-    const filteredProjects = projects.filter((project) => {
+    filteredProjects = projects.filter((project) => {
       const values = Object.values(project).join('\n').toLowerCase();
       return values.includes(query.toLowerCase());
-    });
+    }); // Update global filteredProjects [MODIFIED]
     renderProjects(filteredProjects, projectsContainer, 'h2');
-    updatePieChartFilter(filteredProjects); // Update pie chart opacity based on filtered projects
+    updatePieChartFilter(filteredProjects);
+
+    // Apply year filter if a slice is selected [NEW]
+    if (selectedIndex !== -1) {
+      filteredProjects = filteredProjects.filter(
+        (project) => project.year === initialData[selectedIndex].label
+      );
+      renderProjects(filteredProjects, projectsContainer, 'h2');
+      updatePieChartFilter(filteredProjects);
+    }
   });
 
   // Function to render initial pie chart and legend
@@ -59,7 +72,7 @@ async function initProjects() {
 
     let colors = d3.scaleOrdinal(d3.schemeTableau10);
 
-    // Append pie chart paths with initial state
+    // Append pie chart paths with click event
     initialArcs.forEach((arc, i) => {
       svg
         .append('path')
@@ -81,17 +94,22 @@ async function initProjects() {
               selectedIndex === idx ? 'legend-item selected' : 'legend-item'
             );
 
-          // Filter projects by selected year
-          let projectsToRender;
+          // Filter projects by selected year, starting from filteredProjects
           if (selectedIndex === -1) {
-            projectsToRender = projects;
+            filteredProjects = projects.filter((project) => {
+              const values = Object.values(project).join('\n').toLowerCase();
+              return values.includes(query.toLowerCase());
+            }); // Reset to search filter only [MODIFIED]
           } else {
-            projectsToRender = projects.filter(
-              (project) => project.year === initialData[selectedIndex].label
-            );
+            filteredProjects = projects
+              .filter((project) => {
+                const values = Object.values(project).join('\n').toLowerCase();
+                return values.includes(query.toLowerCase());
+              })
+              .filter((project) => project.year === initialData[selectedIndex].label); // Combine filters [MODIFIED]
           }
-          renderProjects(projectsToRender, projectsContainer, 'h2');
-          updatePieChartFilter(projectsToRender); // Update opacity based on filtered projects
+          renderProjects(filteredProjects, projectsContainer, 'h2');
+          updatePieChartFilter(filteredProjects);
         });
     });
 
@@ -117,17 +135,22 @@ async function initProjects() {
               selectedIndex === idx ? 'legend-item selected' : 'legend-item'
             );
 
-          // Filter projects by selected year
-          let projectsToRender;
+          // Filter projects by selected year, starting from filteredProjects
           if (selectedIndex === -1) {
-            projectsToRender = projects;
+            filteredProjects = projects.filter((project) => {
+              const values = Object.values(project).join('\n').toLowerCase();
+              return values.includes(query.toLowerCase());
+            }); // Reset to search filter only [MODIFIED]
           } else {
-            projectsToRender = projects.filter(
-              (project) => project.year === initialData[selectedIndex].label
-            );
+            filteredProjects = projects
+              .filter((project) => {
+                const values = Object.values(project).join('\n').toLowerCase();
+                return values.includes(query.toLowerCase());
+              })
+              .filter((project) => project.year === initialData[selectedIndex].label); // Combine filters [MODIFIED]
           }
-          renderProjects(projectsToRender, projectsContainer, 'h2');
-          updatePieChartFilter(projectsToRender); // Update opacity based on filtered projects
+          renderProjects(filteredProjects, projectsContainer, 'h2');
+          updatePieChartFilter(filteredProjects);
         });
     });
   }
