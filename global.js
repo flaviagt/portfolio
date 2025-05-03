@@ -85,19 +85,41 @@ export function renderProjects(projects, containerElement, headingLevel = 'h2') 
   }
   projects.forEach(projectItem => {
     const article = document.createElement('article');
-    
     article.innerHTML = `
+      <${headingLevel}>${projectItem.title}</${headingLevel}>
       <img src="${projectItem.image}" alt="${projectItem.title}">
-      <div class="project-text">
-        <${headingLevel}>${projectItem.title}</${headingLevel}>
+      <div class="project-content">
         <p>${projectItem.description}</p>
-        <br>
-        <p>c. ${projectItem.year}</p>
+        <p class="year">c. ${projectItem.year}</p>
       </div>
     `;
     containerElement.appendChild(article);
   });
 }
+
+/*
+export function renderProjects(projects, containerElement, headingLevel = 'h2') {
+  containerElement.innerHTML = '';
+  if (projects.length === 0) {
+    containerElement.innerHTML = '<p>No projects available.</p>';
+    return;
+  }
+  projects.forEach(projectItem => {
+    const article = document.createElement('article');
+
+
+    article.innerHTML = `
+        <${headingLevel}>${projectItem.title}</${headingLevel}>
+        <img src="${projectItem.image}" alt="${projectItem.title}">
+        <p>${projectItem.description}</p>
+        
+        <p>${projectItem.year}</p>
+
+    `;
+    containerElement.appendChild(article);
+  });
+}
+  */
 
 export async function fetchGitHubData(username) {
   return fetchJSON(`https://api.github.com/users/${username}`);

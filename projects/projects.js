@@ -10,32 +10,39 @@ async function initProjects() {
   }
   renderProjects(projects, projectsContainer, 'h2');
 
-  // D3 pie chart
+  // D3 pie chart with labeled data
+  let sliceGenerator = d3.pie().value((d) => d.value);
+  let data = [
+    { value: 1, label: 'apples' },
+    { value: 2, label: 'oranges' },
+    { value: 3, label: 'mangos' },
+    { value: 4, label: 'pears' },
+    { value: 5, label: 'limes' },
+    { value: 5, label: 'cherries' },
+  ];
+  let slices = sliceGenerator(data);
+
   let arcGenerator = d3.arc().innerRadius(0).outerRadius(50);
-  let data = [1, 2];
-  let total = 0;
+  let arcs = slices.map((d) => arcGenerator(d));
 
-  for (let d of data) {
-    total += d;
-  }
+  let colors = d3.scaleOrdinal(d3.schemeTableau10);
 
-  let angle = 0;
-  let arcData = [];
-
-  for (let d of data) {
-    let endAngle = angle + (d / total) * 2 * Math.PI;
-    arcData.push({ startAngle: angle, endAngle });
-    angle = endAngle;
-  }
-
-  let arcs = arcData.map((d) => arcGenerator(d));
-  let colors = ['gold', 'purple'];
-
-  arcs.forEach((arc, idx) => {
-    d3.select('svg')
+  // Append pie chart paths
+  arcs.forEach((arc, index) => {
+    d3.select('#projects-pie-plot')
       .append('path')
       .attr('d', arc)
-      .attr('fill', colors[idx]);
+      .attr('fill', colors(index));
+  });
+
+  // Create legend
+  let legend = d3.select('.legend');
+  data.forEach((d, idx) => {
+    legend
+      .append('li')
+      .attr('class', 'legend-item')
+      .attr('style', `--color:${colors(idx)}`)
+      .html(`<span class="swatch"></span> ${d.label} <em>(${d.value})</em>`);
   });
 }
 initProjects();
