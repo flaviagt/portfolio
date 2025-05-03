@@ -109,15 +109,15 @@ article .project-content .year {
 .container {
   display: flex;
   gap: 1em;
-  align-items: center; /* Changed from flex-start to center for better alignment */
+  align-items: center;
 }
 
 .legend {
-  flex: 1; /* Added to occupy available width */
+  flex: 1;
   list-style: none;
   padding: 0.5em;
   margin: 0;
-  margin-block: 2em; /* Added for spacing above/below, matching #projects-pie-plot */
+  margin-block: 2em;
   border: 1px solid #ccc;
   border-radius: 5px;
   display: grid;
@@ -128,7 +128,7 @@ article .project-content .year {
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 0.3em; /* Smaller gap within li than the legend's grid gap */
+  gap: 0.3em;
 }
 
 .swatch {
@@ -137,13 +137,37 @@ article .project-content .year {
   height: 1em;
   aspect-ratio: 1 / 1;
   background-color: var(--color);
-  border-radius: 50%; /* Changed to 50% to make it a circle */
+  border-radius: 50%;
 }
 
 #projects-pie-plot {
   max-width: 20em;
   margin-block: 2em;
   overflow: visible;
+}
+
+#projects-pie-plot path {
+  transition: 300ms; /* Smooth transition for opacity */
+  cursor: pointer; /* Indicate clickability */
+}
+
+#projects-pie-plot:has(path:hover) path:not(:hover) {
+  opacity: 0.5; /* Fade out non-hovered wedges */
+}
+
+.unselected {
+  opacity: 0.5; /* Reduce opacity for unclicked wedges when one is selected */
+}
+
+/* Removed color change for selected state */
+.selected {
+  /* --color: oklch(60% 45% 0) !important; */ /* Removed */
+}
+
+/* Removed fill override for selected path */
+#projects-pie-plot .selected {
+  /* fill: var(--color); */ /* Removed */
+  opacity: 1; /* Ensure selected wedge stays fully opaque */
 }
 
 /* Resume page styles remain unchanged */
@@ -233,11 +257,4 @@ html {
 
 .color-scheme select {
   margin-left: 0.5rem;
-}
-
-.searchBar {
-  width: 100%;
-  box-sizing: border-box; /* ensures padding and border are included in total width */
-  padding: 0.5rem 1rem; /* optional: for better spacing inside input */
-  font-size: 1rem;       /* optional: to ensure readability */
 }
