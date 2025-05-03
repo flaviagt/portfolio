@@ -14,7 +14,7 @@ async function initProjects() {
   const searchInput = document.querySelector('.searchBar');
 
   if (projectsTitle) {
-    projectsTitle.textContent = `Projects (${projects.length})`;
+    projectsTitle.textContent = `${projects.length} Projects`;
   }
   renderProjects(projects, projectsContainer, 'h2');
 
