@@ -234,3 +234,10 @@ html {
 .color-scheme select {
   margin-left: 0.5rem;
 }
+
+.searchBar {
+  width: 100%;
+  box-sizing: border-box; /* ensures padding and border are included in total width */
+  padding: 0.5rem 1rem; /* optional: for better spacing inside input */
+  font-size: 1rem;       /* optional: to ensure readability */
+}
