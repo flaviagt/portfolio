@@ -1,14 +1,23 @@
 import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm';
 
 async function loadData() {
-  const data = await d3.csv('loc.csv', (row) => ({
-    ...row,
-    line: Number(row.line),
-    depth: Number(row.depth),
-    length: Number(row.length),
-    date: new Date(row.date + 'T00:00' + row.timezone),
-    datetime: new Date(row.datetime),
-  }));
+  const data = await d3.csv('loc.csv', (row) => {
+    try {
+      const datetime = new Date(`${row.date}T${row.time}${row.timezone}`);
+      if (isNaN(datetime)) throw new Error('Invalid datetime');
+      return {
+        ...row,
+        line: Number(row.line),
+        depth: Number(row.depth),
+        length: Number(row.length),
+        date: new Date(row.date + 'T00:00' + row.timezone),
+        datetime,
+      };
+    } catch (e) {
+      console.warn(`Skipping invalid row: ${JSON.stringify(row)}`, e);
+      return null;
+    }
+  }).then(data => data.filter(d => d !== null));
   return data;
 }
 
@@ -20,7 +29,7 @@ function processCommits(data) {
       let { author, date, time, timezone, datetime } = first;
       let ret = {
         id: commit,
-        url: 'https://github.com/vis-society/lab-7/commit/' + commit,
+        url: 'https://github.com/flaviagt/portfolio/commit/' + commit,
         author,
         date,
         time,
@@ -44,39 +53,31 @@ function processCommits(data) {
 function renderCommitInfo(data, commits) {
   const statsDiv = d3.select('#stats');
 
-  // Add "Summary" heading above the box
   statsDiv.append('h2')
     .text('Summary')
     .style('font-size', '24px')
     .style('margin-bottom', '10px');
 
-  // Create the dl box with stats
   const dl = statsDiv.append('dl').attr('class', 'stats');
 
-  // Commits
   dl.append('dt').text('Commits');
   dl.append('dd').text(commits.length);
 
-  // Number of files
   const numFiles = d3.group(data, (d) => d.file).size;
   dl.append('dt').text('Files');
   dl.append('dd').text(numFiles);
 
-  // Total LOC
   dl.append('dt').html('Total <abbr title="Lines of Code">LOC</abbr>');
   dl.append('dd').text(data.length);
 
-  // Max depth
   const maxDepth = d3.max(data, (d) => d.depth);
   dl.append('dt').text('Max Depth');
   dl.append('dd').text(maxDepth);
 
-  // Longest line
   const longestLine = d3.max(data, (d) => d.length);
   dl.append('dt').text('Longest Line');
   dl.append('dd').text(longestLine);
 
-  // Max lines (maximum file length in lines)
   const fileLengths = d3.rollups(
     data,
     (v) => d3.max(v, (v) => v.line),
@@ -85,6 +86,41 @@ function renderCommitInfo(data, commits) {
   const maxLines = d3.max(fileLengths, (d) => d[1]);
   dl.append('dt').text('Max Lines');
   dl.append('dd').text(maxLines);
+}
+
+function renderTooltipContent(commit) {
+  const link = document.getElementById('commit-link');
+  const date = document.getElementById('commit-date');
+  const time = document.getElementById('commit-time');
+  const author = document.getElementById('commit-author');
+  const lines = document.getElementById('commit-lines');
+
+  if (Object.keys(commit).length === 0) {
+    console.warn('Empty commit object');
+    return;
+  }
+
+  try {
+    link.href = commit.url || '#';
+    link.textContent = commit.id || 'Unknown';
+    date.textContent = commit.datetime?.toLocaleString('en', { dateStyle: 'full' }) || 'Unknown';
+    time.textContent = commit.datetime?.toLocaleString('en', { timeStyle: 'short' }) || 'Unknown';
+    author.textContent = commit.author || 'Unknown';
+    lines.textContent = commit.totalLines || '0';
+  } catch (e) {
+    console.error('Error rendering tooltip:', e);
+  }
+}
+
+function updateTooltipVisibility(isVisible) {
+  const tooltip = document.getElementById('commit-tooltip');
+  tooltip.hidden = !isVisible;
+}
+
+function updateTooltipPosition(event) {
+  const tooltip = document.getElementById('commit-tooltip');
+  tooltip.style.left = `${event.clientX + 10}px`;
+  tooltip.style.top = `${event.clientY + 10}px`;
 }
 
 function renderScatterPlot(data, commits) {
@@ -107,7 +143,7 @@ function renderScatterPlot(data, commits) {
     .attr('viewBox', `0 0 ${width} ${height}`)
     .style('overflow', 'visible');
 
-    const xScale = d3
+  const xScale = d3
     .scaleTime()
     .domain(d3.extent(commits, (d) => d.datetime))
     .range([usableArea.left, usableArea.right])
@@ -115,7 +151,7 @@ function renderScatterPlot(data, commits) {
 
   const yScale = d3
     .scaleLinear()
-    .domain([0, 24])
+    .domain([0, d3.max(commits, d => d.hourFrac) || 24])
     .range([usableArea.bottom, usableArea.top]);
 
   const gridlines = svg
@@ -129,16 +165,39 @@ function renderScatterPlot(data, commits) {
       .tickSize(-usableArea.width)
     );
 
+  // Calculate the extent of totalLines for the radius scale
+  const [minLines, maxLines] = d3.extent(commits, (d) => d.totalLines);
+
+  // Create a square root scale for radius
+  const rScale = d3
+    .scaleSqrt()
+    .domain([minLines, maxLines])
+    .range([2, 30]); // Adjust range as needed (e.g., [2, 20] for smaller max size)
+
+  // Sort commits by totalLines in descending order
+  const sortedCommits = d3.sort(commits, (d) => -d.totalLines);
+
   const dots = svg.append('g').attr('class', 'dots');
 
   dots
     .selectAll('circle')
-    .data(commits)
+    .data(sortedCommits)
     .join('circle')
     .attr('cx', (d) => xScale(d.datetime))
     .attr('cy', (d) => yScale(d.hourFrac))
-    .attr('r', 5)
-    .attr('fill', 'steelblue');
+    .attr('r', (d) => rScale(d.totalLines))
+    .style('fill-opacity', 0.7) // Base transparency
+    .attr('fill', 'steelblue')
+    .on('mouseenter', (event, commit) => {
+      d3.select(event.currentTarget).style('fill-opacity', 1); // Full opacity on hover
+      renderTooltipContent(commit);
+      updateTooltipVisibility(true);
+      updateTooltipPosition(event);
+    })
+    .on('mouseleave', (event) => {
+      d3.select(event.currentTarget).style('fill-opacity', 0.7);
+      updateTooltipVisibility(false);
+    });
 
   const xAxis = d3.axisBottom(xScale);
   const yAxis = d3
@@ -158,5 +217,6 @@ function renderScatterPlot(data, commits) {
 
 let data = await loadData();
 let commits = processCommits(data);
+if (commits.length === 0) console.warn('No commits processed!');
 renderCommitInfo(data, commits);
 renderScatterPlot(data, commits);
