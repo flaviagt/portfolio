@@ -361,3 +361,14 @@ circle:hover {
 circle.selected {
   fill: #ff6b6b;
 }
+
+circle {
+  transition: r 0.3s ease;
+  transition: all 200ms, r calc(var(--r) * 100ms);
+}
+
+@starting-style {
+  circle {
+    r: 0;
+  }
+}
