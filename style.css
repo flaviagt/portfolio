@@ -372,3 +372,69 @@ circle {
     r: 0;
   }
 }
+
+/* Slider styling */
+input[type="range"] {
+    width: 200px;
+    margin: 0 10px;
+}
+
+/* Files visualization */
+#files {
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    max-width: 800px;
+    margin: 0 auto 40px;
+}
+
+#files > div {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+}
+
+#files dt {
+    grid-column: 1;
+    font-weight: 600;
+    color: #222;
+}
+
+#files dd {
+    grid-column: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: start;
+    align-content: start;
+    gap: 0.15em;
+    padding-top: 0.6em;
+    margin-left: 0;
+}
+
+#files dt code {
+    font-family: monospace;
+}
+
+#files dt small {
+    display: block;
+    font-size: 0.8em;
+    opacity: 0.7;
+}
+
+.loc {
+    display: flex;
+    width: 0.5em;
+    aspect-ratio: 1;
+    background: var(--color, steelblue);
+    border-radius: 50%;
+}
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+    #chart svg {
+        width: 100% !important;
+        height: auto;
+    }
+    #files {
+        grid-template-columns: 1fr 2fr;
+    }
+}

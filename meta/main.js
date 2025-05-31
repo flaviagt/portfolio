@@ -202,6 +202,43 @@ function brushed(event, commits) {
   renderLanguageBreakdown(selection, commits);
 }
 
+function updateFileDisplay(filteredCommits) {
+  let lines = filteredCommits.flatMap((d) => d.lines);
+  let files = d3
+    .groups(lines, (d) => d.file)
+    .map(([name, lines]) => {
+      return { name, lines };
+    })
+    .sort((a, b) => b.lines.length - a.lines.length); // Step 2.3: Sort by line count
+
+  let colors = d3.scaleOrdinal(d3.schemeTableau10); // Step 2.4: Color scale
+
+  let filesContainer = d3
+    .select('#files')
+    .selectAll('div')
+    .data(files, (d) => d.name)
+    .join(
+      (enter) =>
+        enter.append('div').call((div) => {
+          div.append('dt').html((d) => `<code>${d.name}</code><br><small>${d.lines.length} lines</small>`); // Step 2.2: Add line count
+          div.append('dd');
+        }),
+      (update) =>
+        update.call((div) => {
+          div.select('dt').html((d) => `<code>${d.name}</code><br><small>${d.lines.length} lines</small>`);
+        }),
+      (exit) => exit.remove()
+    );
+
+  filesContainer
+    .select('dd')
+    .selectAll('div')
+    .data((d) => d.lines)
+    .join('div')
+    .attr('class', 'loc')
+    .style('background', (d) => colors(d.type)); // Step 2.4: Color by technology
+}
+
 function onTimeSliderChange() {
   const slider = document.getElementById('commit-progress');
   commitProgress = Number(slider.value);
@@ -210,6 +247,7 @@ function onTimeSliderChange() {
   filteredCommits = commits.filter((d) => d.datetime <= commitMaxTime);
   console.log('Filtered commits:', filteredCommits); // Debug: Log filtered commits
   updateScatterPlot(data, filteredCommits);
+  updateFileDisplay(filteredCommits); // Step 2.1: Update file display
 }
 
 function renderScatterPlot(data, commits) {
@@ -226,7 +264,6 @@ function renderScatterPlot(data, commits) {
     height: height - margin.top - margin.bottom,
   };
 
-  // Show no-data message if no commits
   if (!commits || commits.length === 0) {
     console.warn('No commits to render in scatter plot');
     d3.select('#chart .no-data-message').style('display', 'block');
@@ -326,7 +363,6 @@ function updateScatterPlot(data, commits) {
     height: height - margin.top - margin.bottom,
   };
 
-  // Check if SVG exists, otherwise create it
   let svg = d3.select('#chart').select('svg');
   if (svg.empty()) {
     console.warn('No SVG found, creating new one');
@@ -336,7 +372,6 @@ function updateScatterPlot(data, commits) {
       .style('overflow', 'visible');
   }
 
-  // Show no-data message if no commits
   if (!commits || commits.length === 0) {
     console.warn('No commits to update in scatter plot');
     d3.select('#chart .no-data-message').style('display', 'block');
@@ -392,7 +427,6 @@ async function init() {
     return;
   }
 
-  // Initialize timeScale and filteredCommits
   timeScale = d3
     .scaleTime()
     .domain([
@@ -404,11 +438,10 @@ async function init() {
   commitMaxTime = timeScale.invert(commitProgress);
   filteredCommits = commits;
 
-  // Render initial UI
   renderCommitInfo(data, filteredCommits);
   renderScatterPlot(data, commits);
+  updateFileDisplay(filteredCommits); // Step 2.1: Initial file display
 
-  // Set up slider event listener
   const slider = document.getElementById('commit-progress');
   slider.addEventListener('input', onTimeSliderChange);
   onTimeSliderChange();
